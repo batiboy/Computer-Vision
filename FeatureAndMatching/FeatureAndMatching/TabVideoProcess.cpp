@@ -37,13 +37,15 @@ TabVideoProcess::~TabVideoProcess()
 
 void TabVideoProcess::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_BUTTON_EXECUTE, mButtonExecute);
+    CDialog::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_BUTTON_EXECUTE, mButtonExecute);
+    DDX_Control(pDX, IDC_BUTTON_STOP, mButtonStop);
 }
 
 
 BEGIN_MESSAGE_MAP(TabVideoProcess, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_EXECUTE, &TabVideoProcess::OnBnClickedButtonExecute)
+    ON_BN_CLICKED(IDC_BUTTON_STOP, &TabVideoProcess::OnBnClickedButtonStop)
 END_MESSAGE_MAP()
 
 
@@ -61,8 +63,8 @@ void TabVideoProcess::OnBnClickedButtonExecute()
 		CString FileName = dlg.GetPathName();   //获取文件路径名 如D:\\1.jpg
 		string filename = (CStringA)FileName;   //把CString转换成filename。
         this->mButtonExecute.EnableWindow(false);
+        isClicked = false;
 		VideoProcess(filename);
-        Dp->OutputLine(_T("视频处理完毕！"));
         Dp->PrintTimeElapsed();
         this->mButtonExecute.EnableWindow(true);
 	}   
@@ -96,7 +98,7 @@ void TabVideoProcess::VideoProcess(string filePath)
     Dp->OutputLine(_T("开始处理：视频实时特征检测！"));
     Dp->StartTick();
 
-    while (1)
+    while (!isClicked)
     {
         cap >> frame;//等价于cap.read(frame);
         if (frame.empty())
@@ -126,5 +128,20 @@ void TabVideoProcess::VideoProcess(string filePath)
         }           
     }
     cv::destroyWindow("视频特征检测");
+    if (i == totalFrames)
+    {
+        Dp->OutputLine(_T("视频处理完毕！"));
+    }
+    else
+    {
+        Dp->OutputLine(_T("停止视频处理！"));
+    }
     cap.release();
+}
+
+
+void TabVideoProcess::OnBnClickedButtonStop()
+{
+    // TODO: 在此添加控件通知处理程序代码
+    isClicked = true;
 }

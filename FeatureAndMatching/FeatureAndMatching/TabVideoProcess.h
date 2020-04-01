@@ -23,7 +23,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CButton mButtonExecute;
+	bool isClicked = false;
 	afx_msg void OnBnClickedButtonExecute();
 private:
 	void VideoProcess(string filePath);
+public:
+	afx_msg void OnBnClickedButtonStop();
+	CButton mButtonStop;
 };
